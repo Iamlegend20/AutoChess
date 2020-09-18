@@ -1,11 +1,12 @@
 import random
+import config as cf
 
 class Player:
     def __init__(self):
         self.hand = []
         self.bench = []
-        self.gold = 5
-        self.level = 1
+        self.gold = cf.starting_gold
+        self.level = cf.starting_level
         self.draw_percentages = {'1':80, '2':20, '3':0, '4':0, '5':0} 
     def deal_summon(self, pool):
         tier_selection = random.choices(list(self.draw_percentages), weights=list(self.draw_percentages.values()))
@@ -32,19 +33,19 @@ def create_pool():
     tier4_summons=[]
     tier5_summons=[]
     for summon in tier1_summon_names:
-        for x in range(20):
+        for x in range(cf.tier1_summon_quantity):
             tier1_summons.append(Summon(summon, 1))
     for summon in tier2_summon_names:
-        for x in range(18):
+        for x in range(cf.tier2_summon_quantity):
             tier2_summons.append(Summon(summon, 2))
     for summon in tier3_summon_names:
-        for x in range(16):
+        for x in range(cf.tier3_summon_quantity):
             tier3_summons.append(Summon(summon, 3))
     for summon in tier4_summon_names:
-        for x in range(14):
+        for x in range(cf.tier4_summon_quantity):
             tier4_summons.append(Summon(summon, 4))
     for summon in tier5_summon_names:
-        for x in range(12):
+        for x in range(cf.tier5_summon_quantity):
             tier5_summons.append(Summon(summon, 3))
     pool = [tier1_summons, tier2_summons, tier3_summons, tier4_summons, tier5_summons]
     return pool
@@ -54,6 +55,7 @@ def main():
     pool = create_pool()
     for x in range(5): player1.deal_summon(pool)
     print(player1.hand)
+    print(player1.gold)
 
 if __name__ == '__main__':
     main()
