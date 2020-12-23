@@ -7,11 +7,19 @@ class Player:
         self.bench = []
         self.gold = cf.starting_gold
         self.level = cf.starting_level
-        self.draw_percentages = {'1':80, '2':20, '3':0, '4':0, '5':0} 
     def deal_summon(self, pool):
-        tier_selection = random.choices(list(self.draw_percentages), weights=list(self.draw_percentages.values()))
-        self.hand.append(random.choice(pool[int(tier_selection[0]) - 1]))
-        
+        """Choices accpets lists as arguments so we convert the dictionary to lists of the
+        appropriate type, values and keys. It also returns a list of the single number
+        selected so we need to use [0] at the end to grab just the integer 1-5. This could be
+        reduced to a line or two but I chose to break it out to make it easier to read.
+        """
+        draw_percent = cf.draw_percentages[self.level]
+        random_tier = random.choices(list(draw_percent.keys()), weights=list(draw_percent.values()))
+        tier_chosen = pool[random_tier[0] - 1]
+        random.shuffle(tier_chosen)
+        self.hand.append(tier_chosen.pop())
+    def increase_level(self):
+        self.level += 1
                       
 class Summon:
     def __init__(self, name, tier):
@@ -19,32 +27,27 @@ class Summon:
         self.tier = tier
         self.cost = self.tier
     def __repr__(self):
-        return self.name
+        return f"{self.tier}{self.name}"
 
 def create_pool():
-    tier1_summon_names = ['Bomb', 'Flan', 'Cockatrice', 'Funguar', 'Goblin', 'Lamia', 'Basilisk', 'Ahirman', 'Coeurl']
-    tier2_summon_names = ['Chocobo', 'Tonberry', 'Cactuar', 'Behemoth', 'Iron Giant', 'Marlboro', 'Ochu', 'Adamantoise']
-    tier3_summon_names = ['Ramuh', 'Shiva', 'Ifrit', 'Carbuncle', 'Siren', 'Valefor', 'Titan']
-    tier4_summon_names = ['Leviathan', 'Pheonix', 'Diablos', 'Odin', 'Alexander', 'Doomtrain']
-    tier5_summon_names = ['Bahamut', 'Eden', 'Anima', 'Knights of the Round', 'Zodiark']
     tier1_summons=[]
     tier2_summons=[]
     tier3_summons=[]
     tier4_summons=[]
     tier5_summons=[]
-    for summon in tier1_summon_names:
+    for summon in cf.tier1_summon_names:
         for x in range(cf.tier1_summon_quantity):
             tier1_summons.append(Summon(summon, 1))
-    for summon in tier2_summon_names:
+    for summon in cf.tier2_summon_names:
         for x in range(cf.tier2_summon_quantity):
             tier2_summons.append(Summon(summon, 2))
-    for summon in tier3_summon_names:
+    for summon in cf.tier3_summon_names:
         for x in range(cf.tier3_summon_quantity):
             tier3_summons.append(Summon(summon, 3))
-    for summon in tier4_summon_names:
+    for summon in cf.tier4_summon_names:
         for x in range(cf.tier4_summon_quantity):
             tier4_summons.append(Summon(summon, 4))
-    for summon in tier5_summon_names:
+    for summon in cf.tier5_summon_names:
         for x in range(cf.tier5_summon_quantity):
             tier5_summons.append(Summon(summon, 3))
     pool = [tier1_summons, tier2_summons, tier3_summons, tier4_summons, tier5_summons]
@@ -53,9 +56,16 @@ def create_pool():
 def main():
     player1 = Player()                    
     pool = create_pool()
-    for x in range(5): player1.deal_summon(pool)
+    print(len(pool[0]))
+    print(len(pool[1]))
+    for x in range(5): 
+        player1.deal_summon(pool)
     print(player1.hand)
-    print(player1.gold)
-
+    player1.increase_level()
+    for _ in range(5):
+        player1.deal_summon(pool)
+    print(player1.hand)
+    print(len(pool[0]))
+    print(len(pool[1]))
 if __name__ == '__main__':
     main()
